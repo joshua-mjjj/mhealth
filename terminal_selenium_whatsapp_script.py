@@ -1,0 +1,113 @@
+try:
+    from pip import main as pipmain
+except ImportError:
+    from pip._internal import main as pipmain
+
+# from pip._internal import main as pipmain
+
+pipmain(['install', 'selenium'])
+
+import sys, time
+from datetime import date, datetime
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+
+today = date.today().strftime('%d/%m/%Y') # getting today date ddmmyyyy format
+current_time = datetime.now().strftime("%H:%M:%S") # getting current time
+
+msgDate = '25/06/2021'  # dd/mm/yyyy
+msgTime = '11:42'  # hh:mm 24 hour clock
+msg = 'Hello!'
+
+print("done")
+def new_chat(user_name):
+    new_chat = chrome_browser.find_element_by_xpath('//div[@class="_2_1wd copyable-text selectable-text"]')
+    new_chat.send_keys(user_name)
+    time.sleep(2)
+    
+    try:
+        user = chrome_browser.find_element_by_xpath('//span[@title="{}"]'.format(user_name))
+        user.click()
+    except NoSuchElementException as se:
+        print('Username not in contact list')
+        time.sleep(2)
+        chrome_browser.close()
+        # sys.exit()
+    except Exception as e:
+        chrome_browser.close()
+        print(e)
+        sys.exit()
+
+    
+    
+if __name__ == '__main__': # protects from accidentally invoking the script 
+    
+    while True: # keep running script until sending time
+        if msgDate == today:
+            current_time = datetime.now().strftime("%H:%M:%S") # updating current time
+            if current_time >= msgTime:
+
+                # path to browser cache in home
+                # /home/joshua/.config/google-chrome/Default
+                options = webdriver.ChromeOptions()
+                options.add_argument(r'--user-data-dir=home/joshua/.config/google-chrome/Default')
+                options.add_argument('--profile-directory=Default')
+                options.add_argument('--disable-popup-blocking')
+
+                 # path where webdriver is stored
+                 # /home/joshua/Downloads/chromedriver_linux64/chromedriver
+                chrome_browser = webdriver.Chrome(executable_path=r'/home/joshua/Downloads/chromedriver_linux64/chromedriver', options=options)
+                print("done")
+                chrome_browser.execute_script("window.onbeforeunload = function() {};")  # ================================================================
+                chrome_browser.get('https://web.whatsapp.com/')
+                time.sleep(10)
+                 
+                user_name_list = ['Jona','+256751964081',  'Collins', '+256704014103']
+
+                for user_name in user_name_list:
+                    try:
+                        #chat exists
+                        user = chrome_browser.find_element_by_xpath('//span[@title="{}"]'.format(user_name))
+                        user.click()
+                    except NoSuchElementException as se:
+                        # chat doesnot exist hence new chat
+                        print("New number")
+                        chrome_browser.execute_script("window.onbeforeunload = function() {};")            # ==========================================================
+                        chrome_browser.get('https://web.whatsapp.com/send?phone={}&text&source&data&app_absent'.format(user_name))
+                        # new_chat(user_name)
+                        time.sleep(10)
+
+                    time.sleep(10)
+                    message_box = chrome_browser.find_element_by_xpath('//div[@class="_2A8P4"]')
+                    print("find message bar..")
+                    time.sleep(5)
+                    input_box = chrome_browser.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
+
+                    for ch in msg:
+                        if ch == "\n":
+                            ActionChains(chrome_browser).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(
+                                Keys.SHIFT).key_up(Keys.BACKSPACE).perform()
+                        else:
+                            input_box.send_keys(ch)
+                    # message_box.send_keys(msg) 
+                    # message_box.send_keys(msg) 
+                    # message_box.send_keys(msg) 
+                    # message_box.send_keys(msg) 
+                    # typing message
+                    time.sleep(1)
+                    print("Message typed..  ")
+                #     # if  message_box.send_keys(msg):
+                #     message_box = chrome_browser.find_element_by_xpath('//button[@class="_1E0Oz"]')
+                #     print("find button..")
+                #     message_box.click()
+                    input_box.send_keys(Keys.ENTER)
+                    print('message sent to: "{}"'.format(user_name))
+                    time.sleep(5) # time for last message to actually be sent....   ==================================================
+                    # chrome_browser.close()
+                #     # sys.exit()
+                chrome_browser.close()
+                sys.exit()
+            today = date.today().strftime('%d/%m/%Y') # updating today
+            time.sleep(10)  
